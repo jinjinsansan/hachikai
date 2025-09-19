@@ -34,10 +34,23 @@ const firebaseConfig = {
 
 ### Authentication
 1. Firebase Console → Authentication → 始める
-2. Sign-in method → メール/パスワードを有効化
-3. Users → ユーザーを追加（管理者用）
-   - メール: admin@hachikai.com
-   - パスワード: 任意の安全なパスワード
+2. Sign-in method → 以下を有効化：
+   - **Google** ← 推奨
+     - プロジェクトのサポートメールを設定
+     - 有効にするをクリック
+   - **メール/パスワード**（オプション）
+     - メールリンク（パスワードなしログイン）は無効のまま
+3. Authorized domains → 以下を追加：
+   - `localhost` （開発用）
+   - `your-app.vercel.app` （Vercelのドメイン）
+4. 管理者アクセス制御（2つの方法）：
+
+#### 方法1: 特定のGoogleアカウントのみ許可（推奨）
+Firestoreに管理者リストを作成：
+```
+コレクション: admins
+ドキュメントID: 管理者のGoogleアカウントメール
+フィールド: { role: "admin", createdAt: timestamp }
 
 ### Firestore Database
 1. Firebase Console → Firestore Database → データベースを作成
