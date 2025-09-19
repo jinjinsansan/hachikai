@@ -27,14 +27,19 @@ export default function SupabaseLoginForm() {
 
         if (data.user) {
           // 管理者テーブルに追加（既に存在する場合は無視）
-          await supabase
+          const { error: adminError } = await supabase
             .from('admins')
-            .insert({
+            .upsert({
               email: data.user.email,
               name: '管理者',
               role: 'admin'
+            }, {
+              onConflict: 'email'
             })
-            .select()
+
+          if (adminError) {
+            console.log('Admin record already exists or error:', adminError)
+          }
 
           setError('')
           alert('アカウントが作成されました。ログインしてください。')
