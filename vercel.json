@@ -5,11 +5,6 @@
   "installCommand": "cd admin-dashboard && npm install",
   "devCommand": "cd admin-dashboard && npm run dev",
   "regions": ["hnd1"],
-  "functions": {
-    "admin-dashboard/src/app/**/*.tsx": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
