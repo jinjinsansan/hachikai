@@ -52,16 +52,24 @@ export default function SupabaseLoginForm() {
         }
       } else {
         // ログイン処理
+        console.log('Starting auth.signInWithPassword...')
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
-        if (error) throw error
+        console.log('Auth response:', { data, error })
+
+        if (error) {
+          console.error('Auth error details:', error)
+          throw error
+        }
 
         // 管理者権限をチェック（一時的に無効化）
         if (data.user) {
           console.log('ログイン成功:', data.user.email)
+          console.log('User object:', data.user)
+          console.log('Session:', data.session)
           console.log('管理者チェックをスキップしてダッシュボードにアクセス')
         }
       }

@@ -4,6 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
+console.log('Supabase client config:', {
+  url: supabaseUrl,
+  keyExists: !!supabaseAnonKey,
+  keyLength: supabaseAnonKey?.length
+});
+
 // Supabaseクライアントの作成（Next.js用）
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -16,6 +22,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     },
   },
 });
+
+console.log('Supabase client created successfully');
 
 // 型定義
 export interface Profile {
