@@ -101,3 +101,4 @@ scripts/*-report.json
 
 # Logs
 *.log
+.vercel
