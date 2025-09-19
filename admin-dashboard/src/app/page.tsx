@@ -1,22 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Dashboard from '@/components/Dashboard'
-import LoginForm from '@/components/LoginForm'
-import { auth } from '@/lib/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
+import SupabaseDashboard from '@/components/SupabaseDashboard'
+import SupabaseLoginForm from '@/components/SupabaseLoginForm'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user)
+    // Check current session
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setIsAuthenticated(!!session)
       setLoading(false)
-    })
+    }
 
-    return () => unsubscribe()
+    checkAuth()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setIsAuthenticated(!!session)
+        setLoading(false)
+      }
+    )
+
+    return () => subscription.unsubscribe()
   }, [])
 
   if (loading) {
@@ -29,7 +40,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {isAuthenticated ? <Dashboard /> : <LoginForm />}
+      {isAuthenticated ? <SupabaseDashboard /> : <SupabaseLoginForm />}
     </main>
   )
 }
