@@ -77,6 +77,16 @@ yarn-error.log
 .env
 .env.local
 .env.production
+.env.development
+
+# Admin dashboard
+admin-dashboard/.next/
+admin-dashboard/out/
+admin-dashboard/.vercel/
+admin-dashboard/.env.local
+
+# Vercel
+.vercel
 
 # TypeScript
 *.tsbuildinfo
