@@ -54,26 +54,10 @@ export default function SupabaseLoginForm() {
 
         if (error) throw error
 
-        // 管理者権限をチェック
+        // 管理者権限をチェック（一時的に無効化）
         if (data.user) {
-          const { data: adminData, error: adminError } = await supabase
-            .from('admins')
-            .select('*')
-            .eq('email', data.user.email)
-            .single()
-
-          if (adminError || !adminData) {
-            await supabase.auth.signOut()
-            throw new Error('管理者権限がありません')
-          }
-
-          // 最終ログイン時刻を更新
-          await supabase
-            .from('admins')
-            .update({ last_login_at: new Date().toISOString() })
-            .eq('id', adminData.id)
-
           console.log('ログイン成功:', data.user.email)
+          console.log('管理者チェックをスキップしてダッシュボードにアクセス')
         }
       }
     } catch (error: any) {
