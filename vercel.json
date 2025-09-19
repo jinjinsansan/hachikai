@@ -1,9 +1,9 @@
 {
+  "rootDirectory": "admin-dashboard",
   "framework": "nextjs",
-  "outputDirectory": "admin-dashboard/.next",
-  "buildCommand": "cd admin-dashboard && npm run build",
-  "installCommand": "cd admin-dashboard && npm install",
-  "devCommand": "cd admin-dashboard && npm run dev",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
   "regions": ["hnd1"],
   "env": {
     "NODE_ENV": "production"
