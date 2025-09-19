@@ -15,6 +15,11 @@ export default function SupabaseLoginForm() {
     setError('')
     setLoading(true)
 
+    // デバッグ情報をコンソールに出力
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    console.log('Attempting login with:', email)
+
     try {
       if (isSignUp) {
         // サインアップ処理
