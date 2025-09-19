@@ -8,45 +8,72 @@ export default function SupabaseLoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
     try {
-      // Supabaseでメール/パスワード認証
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      if (isSignUp) {
+        // サインアップ処理
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        })
 
-      if (error) throw error
+        if (error) throw error
 
-      // 管理者権限をチェック
-      if (data.user) {
-        const { data: adminData, error: adminError } = await supabase
-          .from('admins')
-          .select('*')
-          .eq('email', data.user.email)
-          .single()
+        if (data.user) {
+          // 管理者テーブルに追加（既に存在する場合は無視）
+          await supabase
+            .from('admins')
+            .insert({
+              email: data.user.email,
+              name: '管理者',
+              role: 'admin'
+            })
+            .select()
 
-        if (adminError || !adminData) {
-          await supabase.auth.signOut()
-          throw new Error('管理者権限がありません')
+          setError('')
+          alert('アカウントが作成されました。ログインしてください。')
+          setIsSignUp(false)
         }
+      } else {
+        // ログイン処理
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
 
-        // 最終ログイン時刻を更新
-        await supabase
-          .from('admins')
-          .update({ last_login_at: new Date().toISOString() })
-          .eq('id', adminData.id)
+        if (error) throw error
 
-        console.log('ログイン成功:', data.user.email)
+        // 管理者権限をチェック
+        if (data.user) {
+          const { data: adminData, error: adminError } = await supabase
+            .from('admins')
+            .select('*')
+            .eq('email', data.user.email)
+            .single()
+
+          if (adminError || !adminData) {
+            await supabase.auth.signOut()
+            throw new Error('管理者権限がありません')
+          }
+
+          // 最終ログイン時刻を更新
+          await supabase
+            .from('admins')
+            .update({ last_login_at: new Date().toISOString() })
+            .eq('id', adminData.id)
+
+          console.log('ログイン成功:', data.user.email)
+        }
       }
     } catch (error: any) {
-      setError(error.message || 'ログインに失敗しました')
-      console.error('Login error:', error)
+      setError(error.message || (isSignUp ? 'サインアップに失敗しました' : 'ログインに失敗しました'))
+      console.error('Auth error:', error)
     } finally {
       setLoading(false)
     }
@@ -86,7 +113,7 @@ export default function SupabaseLoginForm() {
             管理者アカウントでログインしてください
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -135,8 +162,18 @@ export default function SupabaseLoginForm() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
             >
-              {loading ? 'ログイン中...' : 'メールでログイン'}
+              {loading ? (isSignUp ? 'アカウント作成中...' : 'ログイン中...') : (isSignUp ? 'アカウント作成' : 'メールでログイン')}
             </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-orange-600 hover:text-orange-500"
+              >
+                {isSignUp ? 'すでにアカウントをお持ちですか？ログイン' : 'アカウントをお持ちでない方はこちら'}
+              </button>
+            </div>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
